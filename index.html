@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивные итоговые тесты за 3 класс</title>
+    <style>
+        :root {
+            --soft-pink: #fff0f3;
+            --soft-purple: #f3f0ff;
+            --accent-color: #008080;
+            --deep-accent: #800000;
+            --text-main: #4a4a4a;
+            --white: #ffffff;
+            --button-grad: linear-gradient(to top, #800000 0%, #d63031 100%);
+            --grey-light: #f8f9fa;
+            --grey-border: #e9ecef;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--soft-purple);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--soft-pink);
+        }
+
+        h1 {
+            color: var(--deep-accent);
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        p.subtitle {
+            color: #777;
+            font-size: 16px;
+        }
+
+        .subject-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .test-section {
+            display: none;
+        }
+
+        .test-section.active {
+            display: block;
+        }
+
+        .question-card {
+            background: var(--grey-light);
+            border: 1px solid var(--grey-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: var(--white);
+            border: 1px solid var(--grey-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+        }
+
+        .option-label:hover {
+            background: var(--soft-pink);
+            border-color: #ffcbd1;
+        }
+
+        .option-label input {
+            margin-right: 12px;
+            accent-color: var(--accent-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .option-label.selected {
+            border-color: var(--accent-color);
+            background: #e6f2f2;
+        }
+
+        .submit-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .main-button {
+            background: var(--button-grad);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(128, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .main-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(128, 0, 0, 0.3);
+        }
+
+        .results-section {
+            display: none;
+            background: var(--white);
+        }
+
+        .grade-box {
+            text-align: center;
+            padding: 30px;
+            background: var(--soft-pink);
+            border-radius: 15px;
+            margin-bottom: 35px;
+            border: 2px dashed var(--deep-accent);
+        }
+
+        .grade-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .grade-value {
+            font-size: 64px;
+            font-weight: 900;
+            color: var(--deep-accent);
+            margin: 15px 0;
+        }
+
+        .report-section {
+            margin-top: 30px;
+        }
+
+        .report-item {
+            border-bottom: 1px solid var(--grey-border);
+            padding: 15px 0;
+            margin-bottom: 10px;
+            padding-left: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .report-item.wrong {
+            border-left: 4px solid var(--deep-accent);
+            background: #fff8f8;
+        }
+
+        .report-item.correct {
+            border-left: 4px solid var(--accent-color);
+            background: #f4faf6;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .badge.wrong { background: #ffe3e3; color: var(--deep-accent); }
+        .badge.correct { background: #d1ebd9; color: var(--accent-color); }
+
+        .recommendation-box {
+            background: #f0f7f7;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 30px;
+        }
+
+        .recommendation-box h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+        }
+
+        .recommendation-list {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+
+        .recommendation-list li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Итоговое тестирование за курс 3 класса</h1>
+        <p class="subtitle">Выбери предмет, спокойно ответь на все вопросы, а в конце узнаешь свой результат и оценку!</p>
+    </header>
+
+    <div class="subject-selector" id="selectors">
+        <button class="nav-btn active" onclick="switchSubject('math')">Математика</button>
+        <button class="nav-btn" onclick="switchSubject('russian')">Русский язык</button>
+        <button class="nav-btn" onclick="switchSubject('world')">Окружающий мир</button>
+    </div>
+
+    <div id="math-test" class="test-section active">
+        <h2>Тест по математике</h2>
+        <form id="math-form">
+            <div class="questions-container" id="math-questions"></div>
+            <div class="submit-container">
+                <button type="button" class="main-button" onclick="calculateResult('math')">Завершить тест по математике</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="russian-test" class="test-section">
+        <h2>Тест по русскому языку</h2>
+        <form id="russian-form">
+            <div class="questions-container" id="russian-questions"></div>
+            <div class="submit-container">
+                <button type="button" class="main-button" onclick="calculateResult('russian')">Завершить тест по русскому языку</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="world-test" class="test-section">
+        <h2>Тест по окружающему миру</h2>
+        <form id="world-form">
+            <div class="questions-container" id="world-questions"></div>
+            <div class="submit-container">
+                <button type="button" class="main-button" onclick="calculateResult('world')">Завершить тест по окружающему миру</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="results-block" class="results-section">
+        <div class="grade-box">
+            <div class="grade-title" id="grade-title">Твоя оценка по предмету</div>
+            <div class="grade-value" id="grade-value">5</div>
+            <div id="percentage-value" style="font-weight: 600; color: var(--text-main);">Правильных ответов: 95% (19 из 20)</div>
+        </div>
+
+        <div class="recommendation-box" id="recommendation-box">
+            <h3>Рекомендации по повторению тем:</h3>
+            <ul class="recommendation-list" id="recommendation-list"></ul>
+        </div>
+
+        <div class="report-section">
+            <h3>Подробный отчет по каждому вопросу:</h3>
+            <div id="detailed-report"></div>
+        </div>
+
+        <div class="submit-container" style="margin-top: 40px;">
+            <button class="main-button" onclick="resetCurrentTest()">Пройти тест заново</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const database = {
+        math: [
+            { id: 1, topic: "Нумерация трехзначных чисел", q: "В каком числе 5 сотен, 2 десятка и 7 единиц?", o: ["572", "527", "257"], a: 1 },
+            { id: 2, topic: "Сравнение чисел в пределах 1000", q: "Какое неравенство является верным?", o: ["403 > 430", "670 < 607", "815 > 805"], a: 2 },
+            { id: 3, topic: "Табличное умножение и деление", q: "Найди значение выражения: 7 * 8 - 9", o: ["47", "49", "56"], a: 0 },
+            { id: 4, topic: "Внетабличное умножение", q: "Чему равно произведение чисел 16 и 4?", o: ["44", "64", "54"], a: 1 },
+            { id: 5, topic: "Внетабличное деление", q: "Найди частное чисел 75 и 3:", o: ["25", "15", "35"], a: 0 },
+            { id: 6, topic: "Деление с остатком", q: "Выполни деление с остатком: 26 : 4", o: ["6 (ост. 2)", "5 (ост. 6)", "6 (ост. 1)"], a: 0 },
+            { id: 7, topic: "Свойства остатка", q: "Каким может быть максимальный остаток при делении любого числа на 6?", o: ["6", "5", "7"], a: 1 },
+            { id: 8, topic: "Доли и дроби", q: "Длина провода 36 метров. Чему равна 1/4 часть этого провода?", o: ["9 метров", "6 метров", "12 метров"], a: 0 },
+            { id: 9, topic: "Нахождение числа по его доле", q: "Найди длину всей нити, если её 1/3 часть составляет 8 см:", o: ["12 см", "24 см", "16 см"], a: 1 },
+            { id: 10, topic: "Решение уравнений", q: "Найди неизвестное число Х в уравнении: Х * 6 = 72", o: ["12", "14", "11"], a: 0 },
+            { id: 11, topic: "Порядок действий", q: "Какое действие нужно выполнить вторым в выражении: 90 - 45 : 5 + 12?", o: ["вычитание", "деление", "сложение"], a: 0 },
+            { id: 12, topic: "Единицы массы", q: "Сколько килограммов содержится в 4 центнерах?", o: ["40 кг", "4000 кг", "400 кг"], a: 2 },
+            { id: 13, topic: "Единицы длины", q: "Вырази в сантиметрах: 5 метров 4 сантиметра", o: ["540 см", "504 см", "54 см"], a: 1 },
+            { id: 14, topic: "Единицы времени", q: "Сколько минут в 1 часе и 25 минутах?", o: ["125 минут", "85 минут", "95 минут"], a: 1 },
+            { id: 15, topic: "Геометрия: периметр", q: "Периметр квадрата со стороной 7 см равен:", o: ["49 см", "14 см", "28 см"], a: 2 },
+            { id: 16, topic: "Геометрия: площадь", q: "Площадь прямоугольника со сторонами 5 см и 8 см равна:", o: ["40 кв. см", "26 кв. см", "13 кв. см"], a: 0 },
+            { id: 17, topic: "Простые задачи на умножение/деление", q: "Купили 6 блокнотов по 15 рублей каждый. Сколько стоила вся покупка?", o: ["75 рублей", "90 рублей", "85 рублей"], a: 1 },
+            { id: 18, topic: "Задачи на приведение к единице", q: "В 4 коробках лежит 32 карандаша поровну. Сколько карандашей в 6 таких же коробках?", o: ["48 карандашей", "40 карандашей", "56 карандашей"], a: 0 },
+            { id: 19, topic: "Устные приёмы вычислений", q: "Найди разность чисел 630 и 270:", o: ["460", "360", "440"], a: 1 },
+            { id: 20, topic: "Логические задачи", q: "Ленту разрезали в 5 местах. Сколько кусочков ленты получилось?", o: ["5 частей", "4 части", "6 частей"], a: 2 }
+        ],
+        russian: [
+            { id: 1, topic: "Состав слова: приставки", q: "В каком слове есть приставка ЗА-?", o: ["завтрак", "заморозки", "замок"], a: 1 },
+            { id: 2, topic: "Правописание приставок", q: "Укажи слово с правильным написанием неизменяемой приставки:", o: ["сделать", "зделать", "соделать"], a: 0 },
+            { id: 3, topic: "Состав слова: суффиксы", q: "С помощью какого суффикса образовано слово 'домик'?", o: ["-ек-", "-ик-", "-к-"], a: 1 },
+            { id: 4, topic: "Разделительный твёрдый знак (Ъ)", q: "В каком слове пропущен разделительный твёрдый знак?", o: ["об..явление", "плат..е", "в..юга"], a: 0 },
+            { id: 5, topic: "Непроизносимые согласные в корне", q: "В каком слове пропущена буква Т?", o: ["прекрас..ный", "чес..ный", "опас..ный"], a: 1 },
+            { id: 6, topic: "Суффиксы -ИК и -ЕК", q: "В каком слове пишется суффикс -ЕК при изменении слова?", o: ["сыноч..к", "кусти..к", "слони..к"], a: 0 },
+            { id: 7, topic: "Главные члены предложения", q: "Найди подлежащее в предложении: 'Золотая осень раскрасила деревья.'", o: ["деревья", "осень", "золотая"], a: 1 },
+            { id: 8, topic: "Части речи: местоимение", q: "Укажи строчку, состоящую только из личных местоимений:", o: ["я, мы, ты, они", "под, над, перед, за", "он, мой, твой, его"], a: 0 },
+            { id: 9, topic: "Имя существительное: род", q: "Какое из существительных относится к среднему роду?", o: ["кофе", "молоко", "картофель"], a: 1 },
+            { id: 10, topic: "Имя существительное: падежи", q: "Существительные в каком падеже отвечают на вопросы 'Кого? Чего?'?", o: ["Дательный", "Родительный", "Винительный"], a: 1 },
+            { id: 11, topic: "Определение падежа в тексте", q: "Определи падеж существительного в словосочетании: 'подъехал к дому'.", o: ["Дательный", "Творительный", "Предложный"], a: 0 },
+            { id: 12, topic: "Мягкий знак после шипящих", q: "На конце каких существительных после шипящих пишется Ь?", o: ["Женского рода, ед. числа", "Мужского рода, ед. числа", "В форме мн. числа"], a: 0 },
+            { id: 13, topic: "Правописание мягкого знака на конце слов", q: "В каком слове мягкий знак на конце НЕ нужен?", o: ["вещ..", "рож..", "кирпич.."], a: 2 },
+            { id: 14, topic: "Имя прилагательное", q: "С какой частью речи всегда связано имя прилагательное в предложении?", o: ["С глаголом", "С существительным", "С предлогом"], a: 1 },
+            { id: 15, topic: "Окончания имён прилагательных", q: "Какое окончание имеет прилагательное мужского рода в именительном падеже?", o: ["-ая, -яя", "-ое, -ее", "-ый, -ий"], a: 2 },
+            { id: 16, topic: "Глагол: времена", q: "В каком времени стоит глагол в предложении: 'Дети завтра будут писать диктант.'?", o: ["Настоящее", "Прошедшее", "Будущее"], a: 2 },
+            { id: 17, topic: "Глагол: прошедшее время", q: "Как изменяются глаголы в прошедшем времени в единственном числе?", o: ["По родам и числам", "По лицам и числам", "По падежам"], a: 0 },
+            { id: 18, topic: "Лексика: антонимы", q: "Найди верную пару антонимов:", o: ["умный - мудрый", "холод - зной", "быстрый - стремительный"], a: 1 },
+            { id: 19, topic: "Текст и его типы", q: "Как называется текст, к которому можно задать общий вопрос 'Почему?'?", o: ["Текст-описание", "Текст-рассуждение", "Текст-повествование"], a: 1 },
+            { id: 20, topic: "Правописание предлогов и приставок", q: "В каком варианте написание слов раздельное?", o: ["(до)бежал (до)реки", "(по)летел (по)небу", "(за)шёл (за)дерево"], a: 2 }
+        ],
+        world: [
+            { id: 1, topic: "Общество и государство", q: "Кто является главой государства в Российской Федерации?", o: ["Председатель Правительства", "Президент", "Министр образования"], a: 1 },
+            { id: 2, topic: "Человек как живое существо", q: "Какое качество отличает человека от всех других живых существ?", o: ["Умение передвигаться", "Умение мыслить и говорить", "Умение видеть и слышать"], a: 1 },
+            { id: 3, topic: "Экология и состав воздуха", q: "Какой газ живые организмы поглощают при дыхании?", o: ["Кислород", "Углекислый газ", "Азот"], a: 0 },
+            { id: 4, topic: "Свойства воды", q: "What происходит с водой при её замерзании и превращении в лёд?", o: ["Она сжимается", "Она расширяется", "Её объем не меняется"], a: 1 },
+            { id: 5, topic: "Почва и её свойства", q: "Что является самым главным свойством почвы?", o: ["Плодородие", "Влажность", "Наличие песка"], a: 0 },
+            { id: 6, topic: "Разнообразие растений", q: "К какой группе растений относятся мхи?", o: ["Цветковые", "Хвойные", "Споровые растения"], a: 2 },
+            { id: 7, topic: "Размножение растений", q: "С помощью чего размножаются цветковые растения?", o: ["Спорами", "Семенами", "Листьями"], a: 1 },
+            { id: 8, topic: "Дыхание и питание растений", q: "Какое вещество выделяют зелёные растения на свету?", o: ["Углекислый газ", "Кислород", "Азот"], a: 1 },
+            { id: 9, topic: "Разнообразие животных", q: "Какое из этих животных относится к группе пресмыкающихся?", o: ["Тритон", "Змея", "Лягушка"], a: 1 },
+            { id: 10, topic: "Цепи питания", q: "Какое звено обычно является первым в цепи питания?", o: ["Растения", "Растительноядные животные", "Хищники"], a: 0 },
+            { id: 11, topic: "Анатомия: органы чувств", q: "Какой орган человека является органом осязания?", o: ["Язык", "Кожа", "Уши"], a: 1 },
+            { id: 12, topic: "Опорно-двигательная система", q: "Из каких двух главных частей состоит опорно-двигательная система человека?", o: ["Сердце и сосуды", "Скелет и мышцы", "Желудок и кишечник"], a: 1 },
+            { id: 13, topic: "Пищеварительная система", q: "В каком органе человеческого тела начинается процесс переваривания пищи?", o: ["В желудке", "В ротовой полости", "В тонком кишечнике"], a: 1 },
+            { id: 14, topic: "Кровеносная система", q: "Какой орган непрерывно гонит кровь по кровеносным сосудам?", o: ["Лёгкие", "Печень", "Сердце"], a: 2 },
+            { id: 15, topic: "Гигиена и здоровье", q: "Какое гигиеническое правило лучше всего защищает от кишечных инфекций?", o: ["Мытьё рук перед едой", "Закаливание холодной водой", "Чистка зубов дважды в день"], a: 0 },
+            { id: 16, topic: "Экономика и её отрасли", q: "Какая отрасль экономики производит машины, станки, ткани и мебель?", o: ["Промышленность", "Сельское хозяйство", "Торговля"], a: 0 },
+            { id: 17, topic: "Семейный бюджет и деньги", q: "Как называются деньги, которые выплачивают пожилым людям, завершившим трудовую деятельность?", o: ["Зарплата", "Пенсия", "Стипендия"], a: 1 },
+            { id: 18, topic: "Экологическая безопасность", q: "Как загрязняющие вещества чаще всего попадают из окружающей среды в организм человека?", o: ["Через цепи питания", "Через солнечный свет", "Через одежду"], a: 0 },
+            { id: 19, topic: "Города России: Золотое кольцо", q: "Какой старинный город входит в маршрут Золотого кольца России?", o: ["Суздаль", "Владивосток", "Мурманск"], a: 0 },
+            { id: 20, topic: "Страны мира и соседи России", q: "С какой из этих стран Россия имеет сухопутную границу?", o: ["Германия", "Китай", "Франция"], a: 1 }
+        ]
+    };
+
+    let currentSubject = 'math';
+
+    function initTests() {
+        for (const [subject, questions] of Object.entries(database)) {
+            const container = document.getElementById(`${subject}-questions`);
+            container.innerHTML = '';
+            
+            questions.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                
+                const qText = document.createElement('div');
+                qText.className = 'question-text';
+                qText.innerText = `${index + 1}. ${item.q}`;
+                card.appendChild(qText);
+                
+                const optionsList = document.createElement('div');
+                optionsList.className = 'options-list';
+                
+                item.o.forEach((option, oIdx) => {
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    label.id = `label-${subject}-${item.id}-${oIdx}`;
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `question-${subject}-${item.id}`;
+                    radio.value = oIdx;
+                    radio.onclick = function() {
+                        item.o.forEach((_, idx) => {
+                            document.getElementById(`label-${subject}-${item.id}-${idx}`).classList.remove('selected');
+                        });
+                        label.classList.add('selected');
+                    };
+                    
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(option));
+                    optionsList.appendChild(label);
+                });
+                
+                card.appendChild(optionsList);
+                container.appendChild(card);
+            });
+        }
+    }
+
+    function switchSubject(subject) {
+        currentSubject = subject;
+        document.querySelectorAll('.test-section').forEach(el => el.classList.remove('active'));
+        document.getElementById('results-block').style.display = 'none';
+        document.getElementById(`${subject}-test`).classList.add('active');
+        
+        const buttons = document.getElementById('selectors').getElementsByTagName('button');
+        buttons[0].className = `nav-btn ${subject === 'math' ? 'active' : ''}`;
+        buttons[1].className = `nav-btn ${subject === 'russian' ? 'active' : ''}`;
+        buttons[2].className = `nav-btn ${subject === 'world' ? 'active' : ''}`;
+        document.getElementById('selectors').style.display = 'flex';
+    }
+
+    function calculateResult(subject) {
+        const questions = database[subject];
+        const form = document.getElementById(`${subject}-form`);
+        let correctCount = 0;
+        let detailedReportHtml = '';
+        let wrongTopics = new Set();
+        
+        questions.forEach((item, index) => {
+            const selectedRadio = form.querySelector(`input[name="question-${subject}-${item.id}"]:checked`);
+            const userAnswer = selectedRadio ? parseInt(selectedRadio.value) : null;
+            const isCorrect = userAnswer === item.a;
+            
+            if (isCorrect) {
+                correctCount++;
+                detailedReportHtml += `
+                    <div class="report-item correct">
+                        <span class="badge correct">Верно</span>
+                        <div class="question-text">${index + 1}. ${item.q}</div>
+                        <p>Ответ: <b>${item.o[userAnswer]}</b></p>
+                        <p style="font-size: 14px; color: #666;">Тема: ${item.topic}</p>
+                    </div>
+                `;
+            } else {
+                wrongTopics.add(item.topic);
+                const answerText = userAnswer !== null ? item.o[userAnswer] : "Ответ не выбран";
+                detailedReportHtml += `
+                    <div class="report-item wrong">
+                        <span class="badge wrong">Ошибка</span>
+                        <div class="question-text">${index + 1}. ${item.q}</div>
+                        <p>Выбранный ответ: <span style="color: var(--deep-accent); font-weight: 600;">${answerText}</span></p>
+                        <p>Правильный ответ: <span style="color: var(--accent-color); font-weight: 600;">${item.o[item.a]}</span></p>
+                        <p style="font-size: 14px; color: #666;">Тема: ${item.topic}</p>
+                    </div>
+                `;
+            }
+        });
+        
+        const totalQuestions = questions.length;
+        const percentage = Math.round((correctCount / totalQuestions) * 100);
+        let grade = 2;
+        
+        if (percentage >= 91) grade = 5;
+        else if (percentage >= 75) grade = 4;
+        else if (percentage >= 61) grade = 3;
+        else grade = 2;
+        
+        document.getElementById(`${subject}-test`).classList.remove('active');
+        document.getElementById('selectors').style.display = 'none';
+        
+        const resultsBlock = document.getElementById('results-block');
+        resultsBlock.style.display = 'block';
+        
+        let subjName = subject === 'math' ? 'Математике' : subject === 'russian' ? 'Русскому языку' : 'Окружающему миру';
+        document.getElementById('grade-title').innerText = `Твоя итоговая оценка по ${subjName}:`;
+        document.getElementById('grade-value').innerText = grade;
+        document.getElementById('percentage-value').innerText = `Правильных ответов: ${percentage}% (${correctCount} из ${totalQuestions})`;
+        
+        const recList = document.getElementById('recommendation-list');
+        recList.innerHTML = '';
+        
+        if (wrongTopics.size === 0) {
+            const li = document.createElement('li');
+            li.innerHTML = '<b>Отличная работа!</b> Ошибок нет. Весь курс усвоен великолепно!';
+            recList.appendChild(li);
+        } else {
+            wrongTopics.forEach(topic => {
+                const li = document.createElement('li');
+                li.innerHTML = `Повтори тему: <b>«${topic}»</b>`;
+                recList.appendChild(li);
+            });
+        }
+        
+        document.getElementById('detailed-report').innerHTML = detailedReportHtml;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetCurrentTest() {
+        document.getElementById(`${currentSubject}-form`).reset();
+        document.querySelectorAll('.option-label').forEach(el => el.classList.remove('selected'));
+        switchSubject(currentSubject);
+    }
+
+    window.onload = initTests;
+</script>
+</body>
+</html>
